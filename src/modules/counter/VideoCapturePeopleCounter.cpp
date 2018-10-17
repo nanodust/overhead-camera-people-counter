@@ -1,5 +1,8 @@
 #include <chrono>
 #include <set>
+#include <iostream>
+#include <fstream>
+#include <ctime>
 
 using namespace std::chrono;
 
@@ -28,6 +31,7 @@ public:
 
     void setRefLineY(int y) {
         refLineY = y;
+        writeLog("start ");
     }
 
     // member methods
@@ -49,7 +53,18 @@ public:
             processFrame(frame);
         }
     }
-
+    
+    int writeLog(String msg) 
+    {
+      ofstream myfile;
+      time_t now = time(0);
+      //cout << "Number of sec since January 1,1970:" << now << endl;
+      myfile.open ("person_count_log.txt");
+      myfile << now << "\t" << msg << endl;
+      myfile.close();
+      return 0;
+    }
+    
 protected:
 
     set<Person*> people;
@@ -110,8 +125,16 @@ private:
         int direction;
         
         if (isPersonCrossingTheRefLine(person, refLine, &direction)) {
-            if (direction == LINE_DIRECTION_UP) peopleWhoEnteredCount++;
-            else if (direction == LINE_DIRECTION_DOWN) peopleWhoExitedCount++;
+            if (direction == LINE_DIRECTION_UP) {
+                peopleWhoEnteredCount++;
+            // log outfile
+            writeLog("enter: " + to_string(peopleWhoEnteredCount)+ " exit: " + to_string(peopleWhoExitedCount));
+        }
+            else if (direction == LINE_DIRECTION_DOWN) 
+            {peopleWhoExitedCount++;
+            // log outfile
+            writeLog("enter: " + to_string(peopleWhoEnteredCount)+ " exit: " + to_string(peopleWhoExitedCount));
+        }
         }
     }
     
